@@ -1,5 +1,5 @@
 <template>
-  <div class="hero-container">
+  <section class="hero-container">
     <div class="hero-text">
       Public understanding of AI's energy cost is still in its infancy. Many users remain unaware that an AI query "costs" anything beyond their internet connection. This project is an exploration of energy consumption of AI.
     </div>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="content--canvas"></div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -130,7 +130,7 @@ const initCanvas = () => {
   canvasB = document.createElement('canvas');
   
   canvasB.style = `
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -232,14 +232,14 @@ onMounted(() => {
 
 <style scoped>
 .hero-container {
-  position: fixed;
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
 .hero-text {
-  position: fixed;
+  position: absolute;
   top: 40px;
   left: 0;
   right: 0;
@@ -255,7 +255,7 @@ onMounted(() => {
 }
 
 .footer {
-  position: fixed;
+  position: absolute;
   bottom: 40px;
   left: 0;
   right: 0;
@@ -301,6 +301,17 @@ onMounted(() => {
   opacity: 0.8;
 }
 
+.content--canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: hsla(260,40%,5%,1);
+  overflow: hidden;
+}
+
 @media screen and (max-width: 768px) {
   .hero-text {
     padding: 0 20px;
@@ -326,15 +337,5 @@ onMounted(() => {
   .footer-left {
     justify-content: center;
   }
-}
-
-.content--canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background: hsla(260,40%,5%,1);
 }
 </style> 

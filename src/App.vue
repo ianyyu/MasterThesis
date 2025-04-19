@@ -1,11 +1,13 @@
 <template>
   <div class="app">
     <HeroSection />
+    <Introduction />
   </div>
 </template>
 
 <script setup>
 import HeroSection from './components/HeroSection.vue'
+import Introduction from './components/Introduction.vue'
 </script>
 
 <style>
@@ -22,11 +24,8 @@ import HeroSection from './components/HeroSection.vue'
   padding: 0;
 }
 
-html, body {
-  overflow: hidden;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -38,10 +37,8 @@ body {
 }
 
 .app {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 main {
