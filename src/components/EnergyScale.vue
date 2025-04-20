@@ -2,18 +2,27 @@
   <section class="energy-scale">
     <div class="scale-container">
       <div class="scale-row">
-        <div class="scale-item">
-          <div class="value">0.3<span class="unit">Wh</span></div>
+        <div class="scale-item" ref="item0">
+          <div class="value">
+            <span class="number">{{ displayValues[0] }}</span>
+            <span class="unit">Wh</span>
+          </div>
           <div class="description">Energy used per single ChatGPT-4 query</div>
         </div>
         <div class="arrow">›</div>
-        <div class="scale-item">
-          <div class="value">15<span class="unit">Wh</span></div>
+        <div class="scale-item" ref="item1">
+          <div class="value">
+            <span class="number">{{ displayValues[1] }}</span>
+            <span class="unit">Wh</span>
+          </div>
           <div class="description">Equivalent to using 50 searches per day</div>
         </div>
         <div class="arrow">›</div>
-        <div class="scale-item">
-          <div class="value">127,500,00<span class="unit">Wh</span></div>
+        <div class="scale-item" ref="item2">
+          <div class="value">
+            <span class="number">{{ displayValues[2] }}</span>
+            <span class="unit">Wh</span>
+          </div>
           <div class="description">If every person in New York City did the same</div>
         </div>
       </div>
@@ -47,6 +56,65 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
+
+const item0 = ref(null);
+const item1 = ref(null);
+const item2 = ref(null);
+
+const targetValues = [0.3, 15, 127500000];
+const displayValues = ref([0, 0, 0]);
+const animationFrames = 20;
+
+function formatNumber(number, index) {
+  if (index === 2) { // For the large number
+    return Math.round(number).toLocaleString();
+  }
+  return number.toFixed(1);
+}
+
+function animateValue(index, start, end) {
+  let currentFrame = 0;
+  const increment = (end - start) / animationFrames;
+
+  function update() {
+    currentFrame++;
+    const current = start + (increment * currentFrame);
+    displayValues.value[index] = formatNumber(current, index);
+
+    if (currentFrame < animationFrames) {
+      requestAnimationFrame(update);
+    } else {
+      displayValues.value[index] = formatNumber(end, index);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+onMounted(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const index = [item0.value, item1.value, item2.value].indexOf(entry.target);
+        if (index !== -1) {
+          entry.target.querySelector('.number').classList.add('visible');
+          animateValue(index, 0, targetValues[index]);
+          observer.unobserve(entry.target);
+        }
+      }
+    });
+  }, {
+    threshold: 0.5,
+    rootMargin: '0px'
+  });
+
+  [item0.value, item1.value, item2.value].forEach(element => {
+    if (element) {
+      observer.observe(element);
+    }
+  });
+});
 </script>
 
 <style scoped>
@@ -82,15 +150,30 @@
 
 .value {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 120px;
+  font-size: 100px;
   font-weight: 300;
   color: #fff;
   margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.number {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.number.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .unit {
   font-size: 24px;
   margin-left: 4px;
+  opacity: 0.8;
 }
 
 .description {
@@ -118,7 +201,7 @@
   opacity: 0.8;
   text-align: left;
   margin-bottom: 40px;
-  margin-top: 40px;
+  margin-top: 100px;
   max-width: 500px;
   line-height: 1.4;
   padding: 0 20px;
