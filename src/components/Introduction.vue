@@ -1,27 +1,24 @@
 <template>
   <section class="introduction">
     <div class="content">
+      <div class="chart-container">
+        <h3 class="chart-title">Energy per Query (Wh): AI vs Search vs LED</h3>
+        <EnergyChart />
+      </div>
       <h2 class="title">Watt's in Your Query?</h2>
       <div class="text-columns">
         <div class="column">
           <p>
-            Ever wonder what it "costs" when you ask an AI a question? Picture a lamp on your bedside table. A super-efficient AI like Google's Gemini Flash uses about the same electricity as leaving that in. What's wild is that one chat with these models can stretch to ten.
-          </p>
+Ever wonder what it "costs" when you ask an AI a question? Picture a lamp on your bedside table. A super‑efficient AI (like Google's Gemini Flash) uses about the same electricity as flashing that 10‑watt lamp on and off once. A typical chatbot is more like leaving the lamp on for two minutes, and giant models can stretch to ten.           </p>
           <p>
-            One tick of a watch, but send 100 questions in a day and you've burned about 300 watt-hours, enough juice to toast six slices of bread or fill an iPhone from empty. Start multiplying that by millions of curious people and you can imagine a vast hall of tiny lamps glowing all day, each one lighting up just long enough to answer someone's "Hey AI..."
-          </p>
+            One flick isn't much, but send 100 questions in a day and you've burned around 300 watt‑hours, enough juice to toast six slices of bread or fill an iPhone from empty. Multiply that by millions of curious people and you can imagine a vast hall of tiny lamps glowing all day, each one lighting up just long enough to answer someone's "Hey, AI…?"          </p>
         </div>
         <div class="column">
           <p>
-            The chart above turns those numbers into something you can feel: every bar pairs an AI model with an everyday object light bulb flashes, Google searches, toaster seconds, so you can instantly see how much energy each interaction takes.
-          </p>
+            The chart translates the numbers into something tangible: each bar shows the energy consumed by one AI query, a Google search, or a minute of LED‑bulb use, so you can see at a glance how much electricity a single query requires. </p>
           <p>
-            With that visual in mind, the energy behind our daily chats becomes clear and, we hope, a bit more memorable.
-          </p>
+            With that visual in mind, the energy behind our daily chats becomes clear and, we hope, a bit more memorable.          </p>
         </div>
-      </div>
-      <div class="chart-container">
-        <EnergyChart />
       </div>
     </div>
   </section>
@@ -40,7 +37,7 @@ import EnergyChart from './EnergyChart.vue';
   background: hsla(260,40%,5%,1);
   display: flex;
   align-items: flex-start;
-  padding: 80px 0 0 0;
+  padding: 240px 0 0 0;
   box-sizing: border-box;
 }
 
@@ -49,22 +46,43 @@ import EnergyChart from './EnergyChart.vue';
   width: 100%;
 }
 
+.chart-container {
+  width: calc(100% - 180px);
+  height: 650px;
+  margin: 40px auto 160px;
+  padding: 20px 60px 40px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-title {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 16px;
+  color: #fff;
+  opacity: 0.9;
+  text-align: center;
+  margin: 0 0 30px 0;
+}
+
 .title {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 50px;
   font-weight: 300;
   color: #fff;
-  margin-bottom: 40px;
+  margin: 40px 0;
   opacity: 1;
 }
 
 .text-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-bottom:10%;
+  gap: 24px;
+  margin-bottom: 10%;
   justify-content: space-between;
-  width: 700px;
+  width: 600px;
 }
 
 .column {
@@ -73,7 +91,6 @@ import EnergyChart from './EnergyChart.vue';
   line-height: 1.6;
   color: #fff;
   opacity: 1;
-  /*max-width: 300px;*/
   width: 100%;
 }
 
@@ -85,22 +102,22 @@ import EnergyChart from './EnergyChart.vue';
   margin-bottom: 0;
 }
 
-.chart-container {
-  width: calc(100% - 280px);
-  height: 400px;
-  margin: 60px auto;
-  padding-right: 40px;
-}
-
 @media screen and (max-width: 1200px) {
   .chart-container {
     width: calc(100% - 160px);
+    height: 450px;
+    margin: 40px auto 120px;
+    padding: 20px 40px 30px 20px;
+  }
+
+  .chart-title {
+    margin: 0 0 25px 0;
   }
 }
 
 @media screen and (max-width: 768px) {
   .introduction {
-    padding: 40px 0 0 0;
+    padding: 60px 0 0 0;
   }
 
   .content {
@@ -111,6 +128,7 @@ import EnergyChart from './EnergyChart.vue';
     grid-template-columns: 1fr;
     gap: 10px;
     justify-content: flex-start;
+    width: 620px;
   }
 
   .column {
@@ -120,13 +138,19 @@ import EnergyChart from './EnergyChart.vue';
   
   .title {
     font-size: 32px;
-    margin-bottom: 30px;
+    margin: 40px 0;
   }
 
   .chart-container {
     width: calc(100% - 40px);
-    margin: 40px auto;
-    padding-right: 20px;
+    height: 400px;
+    margin: 20px auto 80px;
+    padding: 15px 20px 20px 10px;
+  }
+
+  .chart-title {
+    margin: 0 0 20px 0;
+    font-size: 18px;
   }
 }
 </style> 

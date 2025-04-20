@@ -2,6 +2,7 @@
   <div class="app">
     <HeroSection />
     <Introduction />
+    
   </div>
 </template>
 

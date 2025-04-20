@@ -13,6 +13,9 @@ const chartCanvas = ref(null);
 let chart = null;
 let animationFrameId = null;
 let lastProgress = 0;
+let startTime = null;
+const ANIMATION_DURATION = 800; // Reduced from 800ms for snappier animation
+const BAR_DELAY = 100; // Reduced from 100ms for smoother sequence
 
 let lastScrollY = 0;
 let scrollVelocity = 0;
@@ -55,24 +58,39 @@ const lerp = (start, end, t) => {
   return start * (1 - t) + end * t;
 };
 
-const updateChartValues = (progress) => {
-  const currentTime = Date.now();
-  const timeDelta = currentTime - lastScrollTime;
-  
-  // Calculate adaptive smoothing based on scroll velocity
-  // Faster scrolling = less smoothing = faster animation
-  const velocityFactor = Math.min(1, Math.abs(scrollVelocity) / 50); // Normalize velocity
-  const smoothingFactor = lerp(0.05, 0.3, velocityFactor); // Smoothing range from 0.05 (slow) to 0.3 (fast)
-  
-  const smoothProgress = lerp(lastProgress, progress, smoothingFactor);
-  lastProgress = smoothProgress;
+// Smooth easing function
+const easeOutQuart = (x) => {
+  return 1 - Math.pow(1 - x, 4);
+};
 
-  chart.data.datasets[0].data = sortedData.map(value => value * smoothProgress);
+const updateChartValues = () => {
+  const rect = chartWrapper.value.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+  
+  // Start animation when the top of the chart is 80% of the way up the viewport
+  // Complete animation when it's 20% of the way up
+  const startPoint = viewportHeight * 0.8;
+  const endPoint = viewportHeight * 0.2;
+  const distance = startPoint - endPoint;
+  
+  // Calculate base progress
+  let progress = (startPoint - rect.top) / distance;
+  progress = Math.min(1, Math.max(0, progress));
+  
+  // Apply easing
+  const easedProgress = easeOutQuart(progress);
+  
+  // Apply different delays to each bar
+  const newData = sortedData.map((value, index) => {
+    // Delay each bar by staggering its progress
+    const delayedProgress = Math.max(0, (easedProgress * 1.2) - (index * 0.1));
+    return value * Math.min(1, delayedProgress);
+  });
+
+  chart.data.datasets[0].data = newData;
   chart.update('none');
 
-  if (Math.abs(progress - smoothProgress) > 0.001) {
-    animationFrameId = requestAnimationFrame(() => updateChartValues(progress));
-  }
+  animationFrameId = requestAnimationFrame(updateChartValues);
 };
 
 const handleScroll = () => {
@@ -90,30 +108,21 @@ const handleScroll = () => {
 const animateChart = (entries) => {
   const [entry] = entries;
   
-  // Reset when out of view
   if (!entry.isIntersecting || !chart) {
-    lastProgress = 0;
     if (chart) {
       chart.data.datasets[0].data = Array(sortedLabels.length).fill(0);
       chart.update('none');
     }
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    }
     return;
   }
 
-  // Cancel any ongoing animation
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
+  if (!animationFrameId) {
+    animationFrameId = requestAnimationFrame(updateChartValues);
   }
-
-  // Calculate progress based on how far the element is through the viewport
-  const rect = entry.boundingClientRect;
-  const viewportHeight = window.innerHeight;
-  const progress = 1 - (rect.top / (viewportHeight - rect.height));
-
-  // Clamp progress between 0 and 1
-  const clampedProgress = Math.min(1, Math.max(0, progress));
-  
-  animationFrameId = requestAnimationFrame(() => updateChartValues(clampedProgress));
 };
 
 onMounted(() => {
@@ -125,14 +134,22 @@ onMounted(() => {
   const purplePattern = ctx.createPattern(createDotPattern('#ff00ff'), 'repeat');
   const bluePattern = ctx.createPattern(createDotPattern('#6083FF'), 'repeat');
 
+  const maxValue = Math.max(...sortedData);
+
   const chartData = {
     labels: sortedLabels,
     datasets: [{
       data: Array(sortedLabels.length).fill(0),
+      actualData: sortedData, // Store the actual values for tooltips
       backgroundColor: sortedLabels.map(label => 
         label === '1min use of LED light bulb' || label === 'Google Search' 
           ? purplePattern
           : bluePattern
+      ),
+      tooltipColor: sortedLabels.map(label => 
+        label === '1min use of LED light bulb' || label === 'Google Search' 
+          ? '#ff00ff'
+          : '#6083FF'
       ),
       borderColor: 'transparent',
       borderWidth: 0,
@@ -149,6 +166,14 @@ onMounted(() => {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
+      layout: {
+        padding: {
+          top: 20,    // Add padding at the top
+          right: 0,
+          bottom: 0,
+          left: 0
+        }
+      },
       plugins: {
         legend: {
           display: false
@@ -156,7 +181,18 @@ onMounted(() => {
         tooltip: {
           callbacks: {
             label: function(context) {
-              return `Energy: ${context.raw.toFixed(1)}Wh`;
+              const actualValue = context.dataset.actualData[context.dataIndex];
+              return `Energy: ${actualValue.toFixed(1)}Wh`;
+            },
+            labelColor: function(context) {
+              return {
+                backgroundColor: context.dataset.tooltipColor[context.dataIndex],
+                borderColor: 'transparent',
+                borderWidth: 0,
+                borderRadius: 2,
+                borderSkipped: false,
+                boxShadow: 'none'
+              };
             }
           }
         }
@@ -171,7 +207,10 @@ onMounted(() => {
             font: {
               weight: '500'
             }
-          }
+          },
+          min: 0,
+          max: maxValue * 1.1,
+          beginAtZero: true
         },
         y: {
           grid: {
@@ -181,7 +220,13 @@ onMounted(() => {
             color: '#fff',
             font: {
               weight: '500'
-            }
+            },
+            padding: 10  // Add some padding to the labels
+          },
+          afterFit: function(scaleInstance) {
+            // Ensure there's enough space for the bars
+            scaleInstance.paddingTop = 15;
+            scaleInstance.paddingBottom = 15;
           }
         }
       }
@@ -189,7 +234,7 @@ onMounted(() => {
   });
 
   const observer = new IntersectionObserver(animateChart, {
-    threshold: Array.from({ length: 60 }, (_, i) => i / 59),
+    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
     rootMargin: "-10% 0px -10% 0px"
   });
 
