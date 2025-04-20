@@ -14,8 +14,8 @@ let particles = [];
 const isVisible = ref(false);
 
 const NUM_PARTICLES = 80;
-const PARTICLE_COLORS = ['#CD46FF', '#3F63DA'];
-const MIN_RADIUS = 0.5;
+const PARTICLE_COLORS = ['#CD46FF', '#2A7EFF'];
+const MIN_RADIUS = 0.8;
 const MAX_RADIUS = 2;
 const MIN_SPEED = 2.0;
 const MAX_SPEED = 20.0;
