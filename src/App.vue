@@ -1,19 +1,30 @@
 <template>
   <div class="app">
     <HeroSection class="hero-section" />
-    <ParticleBackground />
+    <ParticleBackground ref="particleBackground" />
     <div class="main-content">
       <Introduction />
       <EnergyScale />
+      <EnergyCal @update-particle-visibility="updateParticleVisibility" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import HeroSection from './components/HeroSection.vue'
 import Introduction from './components/Introduction.vue'
 import EnergyScale from './components/EnergyScale.vue'
 import ParticleBackground from './components/ParticleSection.vue'
+import EnergyCal from './components/EnergyCal.vue'
+
+const particleBackground = ref(null);
+
+const updateParticleVisibility = (isVisible) => {
+  if (particleBackground.value) {
+    particleBackground.value.updateVisibility(isVisible);
+  }
+};
 </script>
 
 <style>

@@ -12,6 +12,7 @@ let ctx = null;
 let animationFrameId = null;
 let particles = [];
 const isVisible = ref(false);
+const isEnergyCalVisible = ref(false);
 
 const NUM_PARTICLES = 80;
 const PARTICLE_COLORS = ['#CD46FF', '#2A7EFF'];
@@ -128,9 +129,20 @@ function checkVisibility() {
   const heroSection = document.querySelector('.hero-section');
   if (heroSection) {
     const heroRect = heroSection.getBoundingClientRect();
-    isVisible.value = heroRect.bottom <= 0;
+    // Only show particles if we're past hero AND not in EnergyCal section
+    isVisible.value = heroRect.bottom <= 0 && !isEnergyCalVisible.value;
   }
 }
+
+// Method to be called from parent when EnergyCal visibility changes
+const updateVisibility = (shouldShow) => {
+  isEnergyCalVisible.value = !shouldShow;
+  checkVisibility(); // Recheck visibility with new EnergyCal state
+};
+
+defineExpose({
+  updateVisibility
+});
 
 onMounted(() => {
   if (canvas.value) {

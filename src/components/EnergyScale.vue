@@ -159,7 +159,7 @@ onMounted(() => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 40px 0 80px 0;
+  padding: 120px 0 80px 0;
 }
 
 .scale-container {
