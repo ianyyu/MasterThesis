@@ -1,5 +1,5 @@
 <template>
-  <section class="energy-scale">
+  <section class="energy-scale" ref="sectionRef">
     <div class="scale-container">
       <div class="scale-row">
         <div class="scale-item" ref="item0">
@@ -58,19 +58,25 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
+const sectionRef = ref(null);
 const item0 = ref(null);
 const item1 = ref(null);
 const item2 = ref(null);
 
 const targetValues = [0.3, 15, 127500000];
-const displayValues = ref([0, 0, 0]);
-const animationFrames = 20;
+const displayValues = ref(['0.0', '0', '0']);
+const animationFrames = 15;
+const hasAnimated = ref(false);
 
 function formatNumber(number, index) {
-  if (index === 2) { // For the large number
+  if (index === 2) {
     return Math.round(number).toLocaleString();
   }
   return number.toFixed(1);
+}
+
+function easeOutQuad(t) {
+  return t * (2 - t);
 }
 
 function animateValue(index, start, end) {
@@ -79,7 +85,8 @@ function animateValue(index, start, end) {
 
   function update() {
     currentFrame++;
-    const current = start + (increment * currentFrame);
+    const progress = easeOutQuad(currentFrame / animationFrames);
+    const current = start + ((end - start) * progress);
     displayValues.value[index] = formatNumber(current, index);
 
     if (currentFrame < animationFrames) {
@@ -92,28 +99,54 @@ function animateValue(index, start, end) {
   requestAnimationFrame(update);
 }
 
+function resetValues() {
+  displayValues.value = ['0.0', '0', '0'];
+  [item0.value, item1.value, item2.value].forEach(item => {
+    if (item) {
+      const numberEl = item.querySelector('.number');
+      if (numberEl) {
+        numberEl.classList.remove('visible');
+      }
+    }
+  });
+  hasAnimated.value = false;
+}
+
+function startAllAnimations() {
+  if (!hasAnimated.value) {
+    hasAnimated.value = true;
+    [0, 1, 2].forEach((index) => {
+      setTimeout(() => {
+        const element = [item0.value, item1.value, item2.value][index];
+        if (element) {
+          element.querySelector('.number').classList.add('visible');
+          animateValue(index, 0, targetValues[index]);
+        }
+      }, index * 150);
+    });
+  }
+}
+
 onMounted(() => {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const index = [item0.value, item1.value, item2.value].indexOf(entry.target);
-        if (index !== -1) {
-          entry.target.querySelector('.number').classList.add('visible');
-          animateValue(index, 0, targetValues[index]);
-          observer.unobserve(entry.target);
-        }
+      // When the section exits viewport from the top
+      if (!entry.isIntersecting && entry.boundingClientRect.top > 0) {
+        resetValues();
+      }
+      // When the section enters viewport from the top
+      else if (entry.isIntersecting && entry.boundingClientRect.top < window.innerHeight) {
+        startAllAnimations();
       }
     });
   }, {
-    threshold: 0.5,
-    rootMargin: '0px'
+    threshold: 0,
+    rootMargin: '-20% 0px -20% 0px' // Trigger when section is 20% in viewport
   });
 
-  [item0.value, item1.value, item2.value].forEach(element => {
-    if (element) {
-      observer.observe(element);
-    }
-  });
+  if (sectionRef.value) {
+    observer.observe(sectionRef.value);
+  }
 });
 </script>
 
@@ -201,7 +234,7 @@ onMounted(() => {
   opacity: 0.8;
   text-align: left;
   margin-bottom: 40px;
-  margin-top: 100px;
+  margin-top: 40px;
   max-width: 500px;
   line-height: 1.4;
   padding: 0 20px;
