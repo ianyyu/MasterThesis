@@ -6,17 +6,19 @@
       <Introduction />
       <EnergyScale />
       <EnergyCal @update-particle-visibility="updateParticleVisibility" />
+      <EquationSection />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import HeroSection from './components/HeroSection.vue'
 import Introduction from './components/Introduction.vue'
 import EnergyScale from './components/EnergyScale.vue'
 import ParticleBackground from './components/ParticleSection.vue'
 import EnergyCal from './components/EnergyCal.vue'
+import EquationSection from './components/EquationSection.vue'
 
 const particleBackground = ref(null);
 
@@ -25,6 +27,24 @@ const updateParticleVisibility = (isVisible) => {
     particleBackground.value.updateVisibility(isVisible);
   }
 };
+
+onMounted(() => {
+  // Add MathJax script
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js';
+  script.async = true;
+  document.head.appendChild(script);
+
+  // Configure MathJax
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+});
 </script>
 
 <style>
