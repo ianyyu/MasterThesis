@@ -89,7 +89,7 @@ import EnergyChart from './EnergyChart.vue';
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: #fff;
+  color: #ffffffe2;
   opacity: 1;
   width: 100%;
 }

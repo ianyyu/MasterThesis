@@ -1,9 +1,11 @@
 <template>
   <div class="app">
-    <HeroSection />
-    <Introduction />
-    <EnergyScale />
-    
+    <HeroSection class="hero-section" />
+    <ParticleBackground />
+    <div class="main-content">
+      <Introduction />
+      <EnergyScale />
+    </div>
   </div>
 </template>
 
@@ -11,6 +13,7 @@
 import HeroSection from './components/HeroSection.vue'
 import Introduction from './components/Introduction.vue'
 import EnergyScale from './components/EnergyScale.vue'
+import ParticleBackground from './components/ParticleSection.vue'
 </script>
 
 <style>
@@ -41,7 +44,21 @@ body {
 
 .app {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+.main-content {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--color-bg);
+  z-index: 1;
+}
+
+.main-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 main {
