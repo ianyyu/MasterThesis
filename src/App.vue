@@ -2,6 +2,7 @@
   <div class="app">
     <HeroSection />
     <Introduction />
+    <EnergyScale />
     
   </div>
 </template>
@@ -9,6 +10,7 @@
 <script setup>
 import HeroSection from './components/HeroSection.vue'
 import Introduction from './components/Introduction.vue'
+import EnergyScale from './components/EnergyScale.vue'
 </script>
 
 <style>

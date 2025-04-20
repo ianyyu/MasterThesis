@@ -1,0 +1,209 @@
+<template>
+  <section class="energy-scale">
+    <div class="scale-container">
+      <div class="scale-row">
+        <div class="scale-item">
+          <div class="value">0.3<span class="unit">Wh</span></div>
+          <div class="description">Energy used per single ChatGPT-4 query</div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="scale-item">
+          <div class="value">15<span class="unit">Wh</span></div>
+          <div class="description">Equivalent to using 50 searches per day</div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="scale-item">
+          <div class="value">127,500,00<span class="unit">Wh</span></div>
+          <div class="description">If every person in New York City did the same</div>
+        </div>
+      </div>
+
+      <div class="comparison-text">
+        To give you a better idea of what 127,500,00 Wh feels like, here are some comparisons:
+      </div>
+
+      <div class="comparisons-grid">
+        <div class="comparison-item">
+          Keep a 10-watt night-light glowing for ~1460 years
+        </div>
+        <div class="comparison-item">
+          Power about 4,250 U.S. homes for one full day
+        </div>
+        <div class="comparison-item">
+          Fully charge ~10 million iPhone 15 Pros
+        </div>
+        <div class="comparison-item">
+          42,500 washer plus dryer loads of laundry
+        </div>
+        <div class="comparison-item">
+          Power one household refrigerator for about 250 years
+        </div>
+        <div class="comparison-item">
+          Run a PlayStation 5 at full blast for ~73 years
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup>
+</script>
+
+<style scoped>
+.energy-scale {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: hsla(260,40%,5%,1);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 0 80px 0;
+}
+
+.scale-container {
+  width: calc(100% - 180px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.scale-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 80px;
+  margin-top: 0;
+}
+
+.scale-item {
+  text-align: center;
+  flex: 1;
+}
+
+.value {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 120px;
+  font-weight: 300;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.unit {
+  font-size: 24px;
+  margin-left: 4px;
+}
+
+.description {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.6;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.arrow {
+  font-size: 48px;
+  color: #fff;
+  opacity: 0.3;
+  margin: 0 40px;
+  font-weight: 300;
+}
+
+.comparison-text {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #fff;
+  opacity: 0.8;
+  text-align: left;
+  margin-bottom: 40px;
+  margin-top: 40px;
+  max-width: 500px;
+  line-height: 1.4;
+  padding: 0 20px;
+}
+
+.comparisons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 40px;
+  row-gap: 100px;
+  max-width: 2000px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.comparison-item {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 26px;
+  line-height: 1.4;
+  color: #ffffffdb;
+  padding: 20px 0 0 0;
+  border-top: 1.5px solid rgb(255, 255, 255);
+  transition: border-color 0.3s ease;
+}
+
+@media screen and (max-width: 1200px) {
+  .scale-container {
+    width: calc(100% - 80px);
+  }
+
+  .value {
+    font-size: 40px;
+  }
+
+  .unit {
+    font-size: 20px;
+  }
+
+  .arrow {
+    margin: 0 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .scale-container {
+    width: calc(100% - 40px);
+  }
+
+  .comparisons-grid {
+    padding: 0 10px;
+    grid-template-columns: 1fr;
+    row-gap: 60px;
+  }
+
+  .scale-row {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .arrow {
+    transform: rotate(90deg);
+    margin: 0;
+  }
+
+  .comparison-item {
+    padding: 15px 0 0 0;
+  }
+
+  .value {
+    font-size: 36px;
+  }
+
+  .unit {
+    font-size: 18px;
+  }
+
+  .description {
+    max-width: 280px;
+  }
+
+  .comparison-text {
+    max-width: 300px;
+    margin-bottom: 30px;
+    padding: 0 10px;
+  }
+}
+</style> 
