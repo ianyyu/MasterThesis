@@ -168,7 +168,7 @@ onMounted(() => {
 .equation-container {
   position: relative;
   width: 100%;
-  padding: 200px 0;
+  padding: 120px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
