@@ -139,12 +139,12 @@ onMounted(() => {
     });
 
     observer.observe(equationRef.value);
-
-    onBeforeUnmount(() => {
-      observer.disconnect();
-      annotations.forEach(a => a.remove());
-    });
   }
+});
+
+onBeforeUnmount(() => {
+  observer.disconnect();
+  annotations.forEach(a => a.remove());
 });
 </script>
 
