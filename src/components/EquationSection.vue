@@ -57,7 +57,9 @@ onMounted(() => {
     if (window.MathJax && window.MathJax.typesetPromise) {
       window.MathJax.typesetPromise([equationRef.value]).then(() => {
         // Give MathJax a moment to finish DOM updates
-        setTimeout(setupAnnotations, 100);
+        setTimeout(setupAnnotations, 500);
+      }).catch(err => {
+        console.error('MathJax typesetting failed:', err);
       });
     } else {
       setTimeout(waitForMathJax, 100);
@@ -74,7 +76,7 @@ onMounted(() => {
 
     if (!scalingElement || !logElement || !baselineElement) {
       console.warn('MathJax elements not found, retrying...');
-      setTimeout(setupAnnotations, 100);
+      setTimeout(setupAnnotations, 500);
       return;
     }
 

@@ -29,21 +29,29 @@ const updateParticleVisibility = (isVisible) => {
 };
 
 onMounted(() => {
-  // Add MathJax script
-  const script = document.createElement('script');
-  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js';
-  script.async = true;
-  document.head.appendChild(script);
-
-  // Configure MathJax
+  // Configure MathJax first
   window.MathJax = {
     tex: {
-      inlineMath: [['\\(', '\\)']]
+      inlineMath: [['\\(', '\\)']],
+      packages: ['base', 'ams', 'noerrors', 'noundefined']
     },
     svg: {
       fontCache: 'global'
+    },
+    startup: {
+      ready: () => {
+        console.log('MathJax is loaded and ready');
+        MathJax.startup.defaultReady();
+      }
     }
   };
+
+  // Then load MathJax script
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  script.async = true;
+  script.id = 'MathJax-script';
+  document.head.appendChild(script);
 });
 </script>
 
