@@ -144,7 +144,6 @@ onMounted(() => {
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: start;
-  margin-bottom: 40px;
 }
 
 .animation-container {
