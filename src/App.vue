@@ -7,6 +7,7 @@
       <EnergyScale />
       <EnergyCal @update-particle-visibility="updateParticleVisibility" />
       <EquationSection />
+      <GraphSection />
     </div>
   </div>
 </template>
@@ -19,6 +20,7 @@ import EnergyScale from './components/EnergyScale.vue'
 import ParticleBackground from './components/ParticleSection.vue'
 import EnergyCal from './components/EnergyCal.vue'
 import EquationSection from './components/EquationSection.vue'
+import GraphSection from './components/GraphSection.vue'
 
 const particleBackground = ref(null);
 
