@@ -5,7 +5,7 @@
     </div>
     <div class="metric-board">
       <div class="metric-title">Energy Consumption</div>
-      <div class="metric-value">{{ points[selectedIdx].energy }} KW</div>
+      <div class="metric-value">{{ displayedEnergy.toFixed(3) }} KW</div>
       <div class="metric-section">
         <div class="section-stroke"></div>
         <div class="section-label">Prompt</div>
@@ -31,7 +31,7 @@
         </div>
         <div class="metric-section">
           <div class="section-stroke"></div>
-          <div class="section-label">Example 2</div>
+          <div class="section-label">Example</div>
           <div class="section-content">{{ points[selectedIdx].example2 }}</div>
         </div>
       </div>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, nextTick, watch } from 'vue'
 import Plotly from 'plotly.js-dist'
 
 const plotlyDiv = ref(null)
@@ -129,28 +129,42 @@ const points = [
   }
 ]
 
-// Prepare data for Plotly
-const x = points.map(p => p.tokenOutput)
-const y = points.map(p => {
-  // Use parameter as a proxy for model complexity (convert to number for plotting)
-  // Remove non-numeric characters and convert to number
-  const num = parseFloat((p.parameter || '').replace(/[^\d.]/g, ''))
-  // Trillion = 1e12, Billion = 1e9
-  if (p.parameter.includes('Trillion')) return num * 1e12
-  if (p.parameter.includes('Billion')) return num * 1e9
-  return num
-})
-const z = points.map(p => p.energy)
+// --- Group data by model and assign colors ---
+const models = [...new Set(points.map(p => p.model))]; // Get unique model names
+const colors = [
+  '#2A7EFF', '#CD46FF', '#9346FF', '#5BC0FF', 
+  
+]; // Define a color palette
 
-const traces = [
-  {
-    x,
-    y,
-    z,
+const modelColorMap = {};
+models.forEach((model, index) => {
+  modelColorMap[model] = colors[index % colors.length]; // Assign colors cyclically
+});
+console.log('Model Color Map:', modelColorMap); // Log the generated map
+
+const traces = models.map(model => {
+  const modelPoints = points.filter(p => p.model === model);
+  const traceColor = modelColorMap[model]; // Get color for this trace
+  console.log(`Trace for ${model}, Color: ${traceColor}`); // Log trace color
+  return {
+    x: modelPoints.map(p => p.tokenOutput),
+    y: modelPoints.map(p => {
+      const num = parseFloat((p.parameter || '').replace(/[^\d.]/g, ''))
+      if (p.parameter.includes('Trillion')) return num * 1e12
+      if (p.parameter.includes('Billion')) return num * 1e9
+      return num
+    }),
+    z: modelPoints.map(p => p.energy),
     mode: 'markers',
-    marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 },
+    marker: {
+      size: 10,
+      color: traceColor, // Assign model-specific color
+      line: { color: '#FFFFFF', width: 0.5 }, // Change stroke color to white
+      opacity: 0.8
+    },
     type: 'scatter3d',
-    customdata: points.map(p => [
+    name: model, // Set trace name for legend
+    customdata: modelPoints.map(p => [
       p.energy,
       p.prompt,
       p.model,
@@ -159,20 +173,28 @@ const traces = [
       p.example2
     ]),
     hovertemplate: '<b>Model:</b> %{customdata[2]}<br>' +
-                   '<b>Prompt:</b> %{customdata[1]|(.{60})...}<br>' + // Truncate prompt
-                   '<b>Energy:</b> %{customdata[0]} KW<br>' +
+                   '<b>Energy:</b> %{customdata[0]:.3f} KW<br>' +
                    '<b>Tokens:</b> %{customdata[4]}<br>' +
                    '<b>Params:</b> %{customdata[3]}<br>' +
                    '<extra></extra>', // Hide default hover info
-  }
-]
+  };
+});
+// --- End grouping and trace creation ---
 
 const layout = {
   margin: { l: 0, r: 0, b: 0, t: 0 },
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor: 'rgba(0,0,0,0)',
   font: { color: '#fff', family: 'Inter, sans-serif' },
-  showlegend: false,
+  showlegend: true, // Enable the legend
+  legend: { 
+    bgcolor: 'rgba(0,0,0,0.5)', // Semi-transparent background for legend
+    bordercolor: 'rgba(255,255,255,0.2)',
+    borderwidth: 1,
+    x: 0.05, // Position legend bottom-left
+    y: 0.05,
+    font: { size: 10 }
+  },
   scene: {
     xaxis: {
       title: { text: 'Token Output', font: { size: 8 } },
@@ -209,23 +231,86 @@ const layout = {
 }
 
 const selectedIdx = ref(0)
+const displayedEnergy = ref(points[0].energy)
+
+// --- Style Constants for Selection ---
+const originalOpacity = 0.8;
+const fadedOpacity = 0.2;
+const originalLineWidth = 0.5;
+const selectedLineWidth = 2;
+// --- End Style Constants ---
+
+// --- Animation Functions ---
+const animationDuration = 500; // Faster duration: 0.5 seconds
+
+function easeOutQuad(t) {
+  return t * (2 - t);
+}
+
+function animateValue(start, end) {
+  let startTime = null;
+  const range = end - start;
+
+  function update(currentTime) {
+    if (startTime === null) startTime = currentTime;
+    const elapsedTime = currentTime - startTime;
+    
+    // Calculate progress, ensuring it doesn't exceed 1
+    const rawProgress = Math.min(1, elapsedTime / animationDuration);
+    const easedProgress = easeOutQuad(rawProgress);
+    
+    displayedEnergy.value = start + (range * easedProgress);
+
+    if (elapsedTime < animationDuration) {
+      requestAnimationFrame(update);
+    } else {
+      displayedEnergy.value = end; // Ensure final value is exact
+    }
+  }
+  requestAnimationFrame(update);
+}
+// --- End Animation Functions ---
+
+// --- Function to Update Point Styles ---
+// --- End Function to Update Point Styles ---
+
+// Watch for changes in selectedIdx to trigger animation and style changes
+watch(selectedIdx, (newIdx, oldIdx) => {
+  // Animate Energy Value
+  if (newIdx !== oldIdx && points[newIdx]) {
+    const startValue = 0; 
+    const endValue = points[newIdx].energy;
+    animateValue(startValue, endValue);
+  }
+
+  // Update Point Styles by calling the dedicated function
+  updatePointStyles(newIdx);
+});
 
 onMounted(() => {
   Plotly.newPlot(plotlyDiv.value, traces, layout)
-
-  // Remove any previous listeners to avoid duplicates
+    .then(() => {
+      // Ensure plot is rendered before setting initial styles
+      console.log('Plot created, setting initial styles.');
+      updatePointStyles(selectedIdx.value); // Set initial highlight for point 0
+    });
+  
+  // Click handler for multiple traces (find original index via customdata)
   plotlyDiv.value.removeAllListeners && plotlyDiv.value.removeAllListeners('plotly_click')
 
   plotlyDiv.value.on('plotly_click', (event) => {
     if (event.points && event.points[0]) {
-      // Log the entire point data object to inspect its structure
-      // console.log('Clicked point data:', event.points[0]); // Remove inspection log
-      const idx = event.points[0].pointNumber; // Use pointNumber instead of pointIndex
-      console.log('Clicked index:', idx, points[idx]); // Restore original log
-      if (typeof idx === 'number' && points[idx]) {
-        // Try updating within nextTick
+      // Get the custom data of the clicked point
+      const clickedCustomData = event.points[0].customdata;
+      // Find the index in the original 'points' array by matching unique data (e.g., prompt and energy)
+      const originalIndex = points.findIndex(p => 
+        p.prompt === clickedCustomData[1] && p.energy === clickedCustomData[0]
+      );
+
+      console.log('Clicked original index:', originalIndex, points[originalIndex]);
+      if (typeof originalIndex === 'number' && originalIndex !== -1 && points[originalIndex]) {
         nextTick(() => {
-           selectedIdx.value = idx
+          selectedIdx.value = originalIndex
         });
       }
     }
@@ -322,5 +407,28 @@ onMounted(() => {
 }
 hr {
   display: none;
+}
+
+/* Style for the prompt content to prevent height changes */
+.metric-board > .metric-section:first-of-type > .section-content {
+  max-height: 150px; /* Adjust this value as needed */
+  overflow-y: auto;
+  /* Add some padding so scrollbar doesn't overlap text */
+  padding-right: 10px; 
+  /* Optional: Basic scrollbar styling for webkit */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+  /* Optional: Basic scrollbar styling for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
 </style> 
