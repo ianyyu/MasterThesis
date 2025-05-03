@@ -5,34 +5,34 @@
     </div>
     <div class="metric-board">
       <div class="metric-title">Energy Consumption</div>
-      <div class="metric-value">{{ selectedPoint.energy }} KW</div>
+      <div class="metric-value">{{ points[selectedIdx].energy }} KW</div>
       <div class="metric-section">
         <div class="section-stroke"></div>
         <div class="section-label">Prompt</div>
-        <div class="section-content"><i>"{{ selectedPoint.prompt }}"</i></div>
+        <div class="section-content"><i>"{{ points[selectedIdx].prompt }}"</i></div>
       </div>
       <div class="metric-row">
         <div class="metric-section">
           <div class="section-stroke"></div>
           <div class="section-label">Model</div>
-          <div class="section-content">{{ selectedPoint.model }}</div>
+          <div class="section-content">{{ points[selectedIdx].model }}</div>
         </div>
         <div class="metric-section">
           <div class="section-stroke"></div>
           <div class="section-label">Parameter</div>
-          <div class="section-content">{{ selectedPoint.parameter }}</div>
+          <div class="section-content">{{ points[selectedIdx].parameter }}</div>
         </div>
       </div>
       <div class="metric-row">
         <div class="metric-section">
           <div class="section-stroke"></div>
-          <div class="section-label">Example 1</div>
-          <div class="section-content">{{ selectedPoint.example1 }}</div>
+          <div class="section-label">Token Output</div>
+          <div class="section-content">{{ points[selectedIdx].tokenOutput }}</div>
         </div>
         <div class="metric-section">
           <div class="section-stroke"></div>
           <div class="section-label">Example 2</div>
-          <div class="section-content">{{ selectedPoint.example2 }}</div>
+          <div class="section-content">{{ points[selectedIdx].example2 }}</div>
         </div>
       </div>
     </div>
@@ -40,110 +40,130 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
 import Plotly from 'plotly.js-dist'
 
 const plotlyDiv = ref(null)
 
-// Metadata for each dot
+// Data from Data.csv
 const points = [
   {
-    energy: 10,
-    prompt: 'Does the series Σan converge absolutely?',
-    model: 'ChatGPT 0-1 Reasoning',
-    parameter: '17 Billion',
-    example1: '1,000 of LED lightbulb light up simultaneously',
-    example2: '7 space heaters turned on all at once.'
+    prompt: 'Design a 10-year global macro-economic simulation that integrates climate-risk scenarios, demographic shifts, and AI-driven productivity, then output policy recommendations for both developed and emerging economies.',
+    model: 'ChatGPT o1',
+    parameter: '200 Billion',
+    tokenOutput: 3479,
+    energy: 4.127,
+    example2: 'Charge a phone up to 40% battery'
   },
   {
-    energy: 5,
-    prompt: 'What is the capital of France?',
-    model: 'ChatGPT 0-1 Reasoning',
-    parameter: '17 Billion',
-    example1: '500 LED bulbs',
-    example2: '3 space heaters.'
+    prompt: 'Draft a full-stack architectural blueprint for a decentralized healthcare data exchange that satisfies HIPAA/GDPR, uses homomorphic encryption for queries, and includes a venture-scale business plan.',
+    model: 'ChatGPT o1',
+    parameter: '200 Billion',
+    tokenOutput: 3580,
+    energy: 3.732,
+    example2: 'Streaming a 20-min sitcom'
   },
   {
-    energy: 7,
-    prompt: 'Explain quantum entanglement.',
-    model: 'ChatGPT 0-1 Reasoning',
-    parameter: '17 Billion',
-    example1: '700 LED bulbs',
-    example2: '4 space heaters.'
+    prompt: 'Generate a graduate-level curriculum (syllabi, readings, labs) for teaching quantum-error-corrected algorithms to computer-science majors coming from classical backgrounds.',
+    model: 'ChatGPT 4o',
+    parameter: '1.76 Trillion',
+    tokenOutput: 1700,
+    energy: 3.025,
+    example2: 'Making a large latte with an espresso machine'
   },
   {
-    energy: 12,
-    prompt: 'What is the speed of light?',
-    model: 'ChatGPT 0-1 Reasoning',
-    parameter: '17 Billion',
-    example1: '1,200 LED bulbs',
-    example2: '8 space heaters.'
+    prompt: 'Given gene-expression data (CSV), identify novel biomarkers for early Alzheimers using unsupervised learning and propose a follow-up wet-lab protocol.',
+    model: 'ChatGPT 4o',
+    parameter: '1.76 Trillion',
+    tokenOutput: 2160,
+    energy: 2.737,
+    example2: 'Light LED lightblub for 16 mins'
   },
   {
-    energy: 8,
-    prompt: 'Define photosynthesis.',
-    model: 'ChatGPT 0-1 Reasoning',
-    parameter: '17 Billion',
-    example1: '800 LED bulbs',
-    example2: '5 space heaters.'
+    prompt: 'Write a 5-chapter interactive fiction game in Twine where player choices are influenced by a dynamic moral-alignment engine; include JSON state diagrams.',
+    model: 'Claud 3.5 Sonnet',
+    parameter: '175 Billion',
+    tokenOutput: 2014,
+    energy: 2.332,
+    example2: 'Boiling half a liter of water in a 2 kW kettle'
+  },
+  {
+    prompt: 'Plan a two-week cultural-immersion itinerary through lesser-known regions of Japan, optimizing for public transport, seasonal festivals, and vegan dining options.',
+    model: 'Llama 3.2',
+    parameter: '90 Billion',
+    tokenOutput: 1720,
+    energy: 1.913,
+    example2: 'Running a Wi-Fi router for an hour'
+  },
+  {
+    prompt: 'Explain why Gödels incompleteness theorems matter to modern software verification in terms a senior product manager can pitch to executives.',
+    model: 'ChatGPT 4o',
+    parameter: '1.76 Trillion',
+    tokenOutput: 1520,
+    energy: 1.515,
+    example2: 'Charging wireless earbuds case twice'
+  },
+  {
+    prompt: 'Create a personalized 12-week marathon training schedule for a 42-year-old with mild asthma and a history of IT-band issues.',
+    model: 'Llama 3.2',
+    parameter: '90 Billion',
+    tokenOutput: 2020,
+    energy: 1.192,
+    example2: 'One cycle of an electric toothbrush'
+  },
+  {
+    prompt: 'Compose a sonnet that hides the digits of π in an acrostic down the left margin.',
+    model: 'ChatGPT 4o',
+    parameter: '1.76 Trillion',
+    tokenOutput: 1120,
+    energy: 0.752,
+    example2: 'A smart-light hub overnight standby'
+  },
+  {
+    prompt: 'Recommend one great mystery novel for a rainy weekend.',
+    model: 'Llama 3.2',
+    parameter: '90 Billion',
+    tokenOutput: 800,
+    energy: 0.384,
+    example2: 'Light a LED light blubl for 2.5 mins'
   }
 ]
 
+// Prepare data for Plotly
+const x = points.map(p => p.tokenOutput)
+const y = points.map(p => {
+  // Use parameter as a proxy for model complexity (convert to number for plotting)
+  // Remove non-numeric characters and convert to number
+  const num = parseFloat((p.parameter || '').replace(/[^\d.]/g, ''))
+  // Trillion = 1e12, Billion = 1e9
+  if (p.parameter.includes('Trillion')) return num * 1e12
+  if (p.parameter.includes('Billion')) return num * 1e9
+  return num
+})
+const z = points.map(p => p.energy)
+
 const traces = [
   {
-    x: [3], y: [4], z: [6], mode: 'markers', marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 }, type: 'scatter3d', name: 'Dot 1',
-    hovertemplate: [
-      'Energy: 10 KW',
-      '<br>Prompt: Does the series Σan converge absolutely?',
-      '<br>Model: ChatGPT 0-1 Reasoning',
-      '<br>Parameter: 17 Billion',
-      '<br>Example 1: 1,000 of LED lightbulb light up simultaneously',
-      '<br>Example 2: 7 space heaters turned on all at once.'
-    ].join('')
-  },
-  {
-    x: [2], y: [2], z: [2], mode: 'markers', marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 }, type: 'scatter3d', name: 'Dot 2',
-    hovertemplate: [
-      'Energy: 5 KW',
-      '<br>Prompt: What is the capital of France?',
-      '<br>Model: ChatGPT 0-1 Reasoning',
-      '<br>Parameter: 17 Billion',
-      '<br>Example 1: 500 LED bulbs',
-      '<br>Example 2: 3 space heaters.'
-    ].join('')
-  },
-  {
-    x: [1], y: [1], z: [1], mode: 'markers', marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 }, type: 'scatter3d', name: 'Dot 3',
-    hovertemplate: [
-      'Energy: 7 KW',
-      '<br>Prompt: Explain quantum entanglement.',
-      '<br>Model: ChatGPT 0-1 Reasoning',
-      '<br>Parameter: 17 Billion',
-      '<br>Example 1: 700 LED bulbs',
-      '<br>Example 2: 4 space heaters.'
-    ].join('')
-  },
-  {
-    x: [1], y: [3], z: [4], mode: 'markers', marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 }, type: 'scatter3d', name: 'Dot 4',
-    hovertemplate: [
-      'Energy: 12 KW',
-      '<br>Prompt: What is the speed of light?',
-      '<br>Model: ChatGPT 0-1 Reasoning',
-      '<br>Parameter: 17 Billion',
-      '<br>Example 1: 1,200 LED bulbs',
-      '<br>Example 2: 8 space heaters.'
-    ].join('')
-  },
-  {
-    x: [2], y: [5], z: [6], mode: 'markers', marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 }, type: 'scatter3d', name: 'Dot 5',
-    hovertemplate: [
-      'Energy: 8 KW',
-      '<br>Prompt: Define photosynthesis.',
-      '<br>Model: ChatGPT 0-1 Reasoning',
-      '<br>Parameter: 17 Billion',
-      '<br>Example 1: 800 LED bulbs',
-      '<br>Example 2: 5 space heaters.'
-    ].join('')
+    x,
+    y,
+    z,
+    mode: 'markers',
+    marker: { size: 12, line: { color: 'rgba(217, 217, 217, 0.14)', width: 0.5 }, opacity: 0.8 },
+    type: 'scatter3d',
+    customdata: points.map(p => [
+      p.energy,
+      p.prompt,
+      p.model,
+      p.parameter,
+      p.tokenOutput,
+      p.example2
+    ]),
+    hovertemplate: '<b>Model:</b> %{customdata[2]}<br>' +
+                   '<b>Prompt:</b> %{customdata[1]|(.{60})...}<br>' + // Truncate prompt
+                   '<b>Energy:</b> %{customdata[0]} KW<br>' +
+                   '<b>Tokens:</b> %{customdata[4]}<br>' +
+                   '<b>Params:</b> %{customdata[3]}<br>' +
+                   '<extra></extra>', // Hide default hover info
   }
 ]
 
@@ -155,7 +175,7 @@ const layout = {
   showlegend: false,
   scene: {
     xaxis: {
-      title: { text: 'Token Usage', font: { size: 8 } },
+      title: { text: 'Token Output', font: { size: 8 } },
       color: '#fff',
       gridcolor: '#333',
       zerolinecolor: '#444',
@@ -188,14 +208,27 @@ const layout = {
   }
 }
 
-const selectedPoint = reactive({ ...points[0] })
+const selectedIdx = ref(0)
 
 onMounted(() => {
   Plotly.newPlot(plotlyDiv.value, traces, layout)
+
+  // Remove any previous listeners to avoid duplicates
+  plotlyDiv.value.removeAllListeners && plotlyDiv.value.removeAllListeners('plotly_click')
+
   plotlyDiv.value.on('plotly_click', (event) => {
-    // event.points[0].curveNumber gives the trace index
-    const traceIdx = event.points[0].curveNumber
-    Object.assign(selectedPoint, points[traceIdx])
+    if (event.points && event.points[0]) {
+      // Log the entire point data object to inspect its structure
+      // console.log('Clicked point data:', event.points[0]); // Remove inspection log
+      const idx = event.points[0].pointNumber; // Use pointNumber instead of pointIndex
+      console.log('Clicked index:', idx, points[idx]); // Restore original log
+      if (typeof idx === 'number' && points[idx]) {
+        // Try updating within nextTick
+        nextTick(() => {
+           selectedIdx.value = idx
+        });
+      }
+    }
   })
 })
 </script>

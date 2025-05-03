@@ -5,7 +5,7 @@
         <div class="equation" ref="equationRef">
           <span class="eq-part">\( E(\text{complexity}, \text{tokens}) = \)</span>
           <div class="term-wrapper scaling-term" ref="scalingWrapper">
-            <span class="eq-part" ref="scalingTerm">\( 0.001 \times \text{complexity} \)</span>
+            <span class="eq-part" ref="scalingTerm">\( 0.01 \times \text{complexity} \)</span>
             <div class="annotation scaling" ref="scalingAnnotation">
               <div class="annotation-content">
                 We need some scaling factor so that the final "energy" values fall into a convenient (small) numeric range. For demonstration purposes, we don't want the energy to be, say, 1,000 or 10,000. We want a smaller, more manageable number in the realm of "0.1" or "0.2."
