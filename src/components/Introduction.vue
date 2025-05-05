@@ -1,5 +1,5 @@
 <template>
-  <section class="introduction">
+  <section class="introduction" id="introduction">
     <div class="content">
       <div class="chart-container">
         <h3 class="chart-title">Energy per Query (Wh): AI vs Search vs LED</h3>

@@ -1,5 +1,5 @@
 <template>
-  <section class="equation-section" ref="sectionRef">
+  <section class="equation-section" id="equation" ref="sectionRef">
     <div class="content">
       <div class="equation-container">
         <div class="equation" ref="equationRef">

@@ -5,14 +5,14 @@
     </div>
     <div class="footer">
       <div class="footer-left">
-        <button class="footer-button">In The Age of AI</button>
+        <button class="footer-button" @click="scrollToSection('introduction')">In The Age of AI</button>
       </div>
       <div class="footer-center">
         <span class="scroll-text">(Scroll down)</span>
       </div>
       <div class="footer-right">
-        <button class="footer-button">Thesis</button>
-        <button class="footer-button">More</button>
+        <button class="footer-button" @click="scrollToSection('equation')">Thesis</button>
+        <button class="footer-button" @click="openExternalLink">More</button>
       </div>
     </div>
     <div class="content--canvas"></div>
@@ -22,6 +22,18 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { seed, simplex2 } from '../utils/noise';
+
+// Methods for button navigation
+const scrollToSection = (sectionId) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+const openExternalLink = () => {
+  window.open('https://news.mit.edu/2025/explained-generative-ai-environmental-impact-0117', '_blank');
+};
 
 // Animation constants
 const PARTICLE_COUNT = 700;
