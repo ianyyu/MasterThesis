@@ -5,7 +5,7 @@
       <div class="text-columns">
         <div class="column">
           <p>
-            Let's apply the equation to real-world queries and visualize the results. Remember, this formula is only illustrative; it simply helps us explore how energy consumption, AI-model complexity, and output tokens interact.
+            Let's apply the equation above to some real-world queries and visualize the results. Remember, this formula is only illustrative; it simply helps us explore how energy consumption, AI-model complexity, and output tokens interact relative to each other.
           </p>
         </div>
         <div class="column">
@@ -29,9 +29,9 @@
   background: hsla(260,40%,5%,1);
   display: flex;
   align-items: flex-start;
-  padding: 80px 0 0 0;
+  padding: 100px 0 0 0;
   box-sizing: border-box;
-  margin-top: 80px;
+  margin-top: 180px;
 }
 
 .content {

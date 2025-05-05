@@ -9,6 +9,7 @@
       <EquationSection />
       <DataExplorationText />
       <GraphSection />
+      <EndingSection />
     </div>
   </div>
 </template>
@@ -23,6 +24,7 @@ import EnergyCal from './components/EnergyCal.vue'
 import EquationSection from './components/EquationSection.vue'
 import DataExplorationText from './components/DataExplorationText.vue'
 import GraphSection from './components/GraphSection.vue'
+import EndingSection from './components/EndingSection.vue'
 
 const particleBackground = ref(null);
 
