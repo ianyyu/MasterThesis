@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>In the Age of AI</title>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['\\(', '\\)']],
+          packages: ['base', 'ams', 'noerrors', 'noundefined']
+        },
+        svg: {
+          fontCache: 'global'
+        },
+        startup: {
+          ready: () => {
+            console.log('MathJax is loaded and ready');
+            MathJax.startup.defaultReady();
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script type="module" crossorigin src="/MasterThesis/assets/index-V0afO9oG.js"></script>
+    <link rel="stylesheet" crossorigin href="/MasterThesis/assets/index-BHf4khdj.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html> 
