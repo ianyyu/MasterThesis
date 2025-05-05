@@ -152,12 +152,12 @@ onBeforeUnmount(() => {
 .equation-section {
   position: relative;
   width: 100%;
-  min-height: 100vh;
   background: hsla(260,40%,5%,1);
   display: flex;
-  align-items: center;
-  padding: 40px 0;
+  align-items: flex-start;
+  padding: 20px 0 180px 0;
   box-sizing: border-box;
+  margin-top: -220px;
 }
 
 .content {
@@ -170,7 +170,7 @@ onBeforeUnmount(() => {
 .equation-container {
   position: relative;
   width: 100%;
-  padding: 120px 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -228,15 +228,15 @@ onBeforeUnmount(() => {
 }
 
 .scaling-term .annotation {
-  top: calc(100% + 40px);
+  top: calc(100% + 20px);
 }
 
 .log-term .annotation {
-  bottom: calc(100% + 40px);
+  bottom: calc(100% + 20px);
 }
 
 .baseline-term .annotation {
-  top: calc(100% + 40px);
+  top: calc(100% + 20px);
 }
 
 .annotation.show {
@@ -263,23 +263,23 @@ onBeforeUnmount(() => {
   position: absolute;
   width: 2px;
   background: rgba(255, 255, 255, 0.3);
-  height: 40px;
+  height: 20px;
 }
 
 .scaling-term .annotation-content::before {
-  top: -40px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .log-term .annotation-content::before {
-  bottom: -40px;
+  bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .baseline-term .annotation-content::before {
-  top: -40px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
 }

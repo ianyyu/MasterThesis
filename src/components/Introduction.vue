@@ -42,14 +42,14 @@ import EnergyChart from './EnergyChart.vue';
 }
 
 .content {
-  padding-left: 40px;
+  padding-left: 120px;
   width: 100%;
 }
 
 .chart-container {
   width: calc(100% - 180px);
   height: 650px;
-  margin: 40px auto 160px;
+  margin: 60px auto 80px;
   padding: 20px 60px 40px 20px;
   position: relative;
   display: flex;

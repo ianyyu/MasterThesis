@@ -114,12 +114,12 @@ onMounted(() => {
 .energy-cal {
   position: relative;
   width: 100%;
-  min-height: 100vh;
   background: hsla(260,40%,5%,1);
   display: flex;
   align-items: flex-start;
   padding: 40px 0 0 0;
   box-sizing: border-box;
+  margin-bottom: 40px;
 }
 
 .content {
@@ -134,7 +134,7 @@ onMounted(() => {
   font-size: 50px;
   font-weight: 300;
   color: #fff;
-  margin: 0 0 180px 0;
+  margin: 0 0 120px 0;
   line-height: 1.2;
   width: 400px;
 }
@@ -144,7 +144,7 @@ onMounted(() => {
   grid-template-columns: 1fr 1fr;
   gap: 80px;
   align-items: start;
-  padding-bottom: 80px;
+  padding-bottom: 0;
 }
 
 .animation-container {
